@@ -501,16 +501,29 @@ function App() {
 
                 {/* Article Content paragraphs */}
                 <div className="space-y-6 text-zinc-300 leading-relaxed text-base md:text-lg">
-                  {selectedArticle.content[lang].split('\n\n').map((para, idx) => {
-                    // Render subheaders beautifully if they start with ###
-                    if (para.trim().startsWith('###')) {
+                  {selectedArticle.content[lang].split('\n').map((para, idx) => {
+                    const trimmed = para.trim();
+                    if (!trimmed) return null;
+
+                    const isHeader = trimmed.startsWith('###') || /<h[1-6]>/.test(trimmed);
+                    if (isHeader) {
+                      const cleanText = trimmed
+                        .replace(/^###/g, '')
+                        .replace(/<\/?[a-z0-9]+[^>]*>/gi, '')
+                        .trim();
                       return (
                         <h4 key={idx} className="text-xl font-bold text-dz-gold pt-4 pb-2 border-b border-zinc-800">
-                          {para.replace('###', '').trim()}
+                          {cleanText}
                         </h4>
                       );
                     }
-                    return <p key={idx}>{para}</p>;
+
+                    const cleanPara = trimmed.replace(/<\/?[a-z0-9]+[^>]*>/gi, '').trim();
+                    return cleanPara ? (
+                      <p key={idx} className="text-zinc-300">
+                        {cleanPara}
+                      </p>
+                    ) : null;
                   })}
                 </div>
 
