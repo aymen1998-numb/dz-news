@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
-  Globe, 
   Search, 
   ArrowLeft, 
   Calendar, 
@@ -10,7 +9,6 @@ import {
   ExternalLink, 
   BookOpen, 
   TrendingUp, 
-  Layers,
   Check,
   ChevronRight
 } from 'lucide-react';
