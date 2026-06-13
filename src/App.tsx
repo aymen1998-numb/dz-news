@@ -4,7 +4,6 @@ import {
   Search, 
   ArrowLeft, 
   Calendar, 
-  Clock, 
   Share2, 
   ExternalLink, 
   BookOpen, 
@@ -438,12 +437,59 @@ function App() {
       <main className="relative z-10">
         
         {selectedArticle ? (
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 relative">
-            {/* Header / Back Button Controls */}
-            <div className="flex items-center justify-between pb-6 mb-8 border-b border-[#c9a84c]/15">
+          <div className="world-cup-report-page min-h-screen">
+            {/* Dynamic Font and Style Injection */}
+            <style>{`
+              @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+              
+              .wcr-article-hero {
+                position: relative;
+                padding: 60px 48px 48px;
+                background: linear-gradient(135deg, #0B1426 60%, #0D2040 100%);
+                border-bottom: 1px solid rgba(201, 168, 76, 0.15);
+              }
+              .wcr-article-hero::before {
+                content: 'INSIGHT';
+                position: absolute;
+                ${lang === 'ar' ? 'left: -10px;' : 'right: -10px;'}
+                top: -20px;
+                font-family: 'Barlow Condensed', sans-serif;
+                font-size: 260px;
+                font-weight: 900;
+                color: rgba(255, 255, 255, 0.015);
+                line-height: 1;
+                pointer-events: none;
+                user-select: none;
+              }
+              .wcr-article-content {
+                max-w: 1200px;
+                margin: 0 auto;
+                padding: 48px;
+              }
+              .wcr-article-grid {
+                display: grid;
+                grid-template-columns: 1fr 340px;
+                gap: 64px;
+              }
+              @media (max-width: 960px) {
+                .wcr-article-grid {
+                  grid-template-columns: 1fr;
+                  gap: 40px;
+                }
+                .wcr-article-hero {
+                  padding: 40px 24px 32px;
+                }
+                .wcr-article-content {
+                  padding: 24px;
+                }
+              }
+            `}</style>
+
+            {/* Back Bar Controls */}
+            <div className="report-back-bar">
               <button
                 onClick={() => selectArticle(null)}
-                className="flex items-center gap-2 text-sm text-[#cbd5e1] hover:text-white transition-colors cursor-pointer"
+                className="btn-back"
               >
                 <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
                 <span>{activeView === 'world-cup' ? activeT.navWorldCup : activeT.backToHome}</span>
@@ -487,131 +533,142 @@ function App() {
               </div>
             </div>
 
-            {/* Immersive glow background */}
-            <div className="absolute top-[-5%] left-[-5%] w-[50%] h-[50%] bg-emerald-500/5 rounded-full blur-[140px] pointer-events-none" />
-            <div className="absolute bottom-[-5%] right-[-5%] w-[50%] h-[50%] bg-[#c9a84c]/5 rounded-full blur-[140px] pointer-events-none" />
-
-            {/* Meta details */}
-            <div className="flex flex-wrap items-center gap-4 text-xs text-[#8b9bb4] mb-4">
-              <span className="bg-[#006233]/45 text-[#c9a84c] px-2.5 py-0.5 rounded font-bold uppercase tracking-wider border border-[#c9a84c]/20">
-                {activeT.categories[getCategory(selectedArticle)]}
-              </span>
-              <div className="flex items-center gap-1">
-                <Calendar className="w-4 h-4 text-[#c9a84c]" />
-                <span>{new Date(selectedArticle.date).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</span>
+            {/* Premium World Cup Hero Section */}
+            <div className="wcr-article-hero">
+              <div className="wcr-hero-eyebrow">
+                <span>{activeT.categories[getCategory(selectedArticle)]} · {new Date(selectedArticle.date).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
               </div>
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4 text-[#c9a84c]" />
-                <span>5 {activeT.readTime}</span>
-              </div>
-            </div>
-
-            {/* Main Article Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-black mb-8 leading-snug text-white tracking-tight border-b border-[#c9a84c]/10 pb-6 font-serif">
-              {selectedArticle.title[lang]}
-            </h1>
-
-            {/* 2-Column Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
               
-              {/* Left Column: Excerpt & Main Content (70% on lg) */}
-              <div className="lg:col-span-2 space-y-8">
-                {/* Excerpt styled like a premium World Cup Pull-Quote */}
-                <div 
-                  className="p-6 rounded-xl text-lg text-[#cbd5e1] italic border-[#c9a84c] bg-[#131f38]/50 shadow-inner"
-                  style={{
-                    borderLeftWidth: lang === 'ar' ? '0px' : '4px',
-                    borderRightWidth: lang === 'ar' ? '4px' : '0px',
-                    borderColor: '#c9a84c',
-                    textAlign: lang === 'ar' ? 'right' : 'left',
-                    direction: lang === 'ar' ? 'rtl' : 'ltr'
-                  }}
-                >
-                  "{selectedArticle.excerpt[lang]}"
+              <h1 className="wcr-hero-headline" style={{ fontFamily: "'Barlow Condensed', sans-serif" }}>
+                {selectedArticle.title[lang]}
+              </h1>
+
+              <p className="wcr-hero-deck">
+                {selectedArticle.excerpt[lang]}
+              </p>
+
+              {/* Stat Gauges at the top for premium feel */}
+              <div className="wcr-gauge-row mt-8">
+                <div className="wcr-gauge-card">
+                  <div className="wcr-gauge-card-label">
+                    {lang === 'ar' ? 'نموذج التوقع' : 'Model Confidence'}
+                  </div>
+                  <div className="wcr-gauge-card-value green">
+                    {getCategory(selectedArticle) === 'ai' ? '92%' :
+                     getCategory(selectedArticle) === 'macro' ? '88%' :
+                     getCategory(selectedArticle) === 'erp' ? '85%' : '80%'}
+                  </div>
+                  <div className="wcr-gauge-card-sub">
+                    {lang === 'ar' ? 'فحص محاكاة B2B' : 'B2B Simulation Precision'}
+                  </div>
+                  <div className="wcr-progress-bar-wrap">
+                    <div 
+                      className="wcr-progress-bar-fill" 
+                      style={{ 
+                        width: getCategory(selectedArticle) === 'ai' ? '92%' :
+                               getCategory(selectedArticle) === 'macro' ? '88%' :
+                               getCategory(selectedArticle) === 'erp' ? '85%' : '80%'
+                      }} 
+                    />
+                  </div>
                 </div>
 
-                {/* Safe HTML rendering for body content */}
-                <div 
-                  className="prose prose-invert max-w-none text-[#cbd5e1] space-y-6 leading-relaxed text-base md:text-lg"
-                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
-                  style={{
-                    fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '"Inter", sans-serif'
-                  }}
-                >
-                  <div dangerouslySetInnerHTML={{ __html: selectedArticle.content[lang] }} />
+                <div className="wcr-gauge-card">
+                  <div className="wcr-gauge-card-label">
+                    {lang === 'ar' ? 'معدل الأهداف المتوقعة' : 'Expected Goals (xG)'}
+                  </div>
+                  <div className="wcr-gauge-card-value gold">
+                    {selectedArticle.slug.includes('winner') ? '2.15' :
+                     selectedArticle.slug.includes('algeria') ? '1.45' :
+                     selectedArticle.slug.includes('morocco') ? '1.10' :
+                     selectedArticle.slug.includes('saudi') ? '0.75' : '0.95'}
+                  </div>
+                  <div className="wcr-gauge-card-sub">
+                    {lang === 'ar' ? 'الإنتاجية الهجومية للمباراة' : 'Projected Offensive Output'}
+                  </div>
+                  <div className="wcr-progress-bar-wrap">
+                    <div 
+                      className="wcr-progress-bar-fill gold" 
+                      style={{ 
+                        width: selectedArticle.slug.includes('winner') ? '80%' :
+                               selectedArticle.slug.includes('algeria') ? '65%' :
+                               selectedArticle.slug.includes('morocco') ? '55%' :
+                               selectedArticle.slug.includes('saudi') ? '40%' : '50%'
+                      }} 
+                    />
+                  </div>
+                </div>
+
+                <div className="wcr-gauge-card">
+                  <div className="wcr-gauge-card-label">
+                    {lang === 'ar' ? 'مدة القراءة' : 'Reading Duration'}
+                  </div>
+                  <div className="wcr-gauge-card-value">
+                    5 {lang === 'ar' ? 'دقائق' : 'min'}
+                  </div>
+                  <div className="wcr-gauge-card-sub">
+                    {lang === 'ar' ? 'دراسة استراتيجية شاملة' : 'Comprehensive business brief'}
+                  </div>
                 </div>
               </div>
-
-              {/* Right Column: Premium Intelligence Sidebar (30% on lg) */}
-              <div className="space-y-6 lg:sticky lg:top-24">
-                
-                {/* Market Intelligence Simulation Indicator */}
-                <div className="bg-[#131f38] border border-[#c9a84c]/25 rounded-2xl p-6 space-y-4">
-                  <div className="text-[10px] font-bold text-[#8b9bb4] tracking-wider uppercase">
-                    {lang === 'ar' ? 'مؤشر استخبارات السوق' : 'Market Intelligence Index'}
-                  </div>
-                  
-                  {/* Gauge Bar */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between items-end">
-                      <span className="text-3xl font-black text-white">
-                        {getCategory(selectedArticle) === 'ai' ? '92%' :
-                         getCategory(selectedArticle) === 'macro' ? '88%' :
-                         getCategory(selectedArticle) === 'erp' ? '85%' : '80%'}
-                      </span>
-                      <span className="text-[10px] font-bold text-emerald-400 uppercase">
-                        {lang === 'ar' ? 'عالي الدقة' : 'High Precision'}
-                      </span>
-                    </div>
-                    <div className="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
-                      <div 
-                        className="bg-gradient-to-r from-emerald-500 to-[#c9a84c] h-full rounded-full"
-                        style={{
-                          width: getCategory(selectedArticle) === 'ai' ? '92%' :
-                                 getCategory(selectedArticle) === 'macro' ? '88%' :
-                                 getCategory(selectedArticle) === 'erp' ? '85%' : '80%'
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <p className="text-xs text-[#8b9bb4] leading-relaxed">
-                    {lang === 'ar' 
-                      ? 'فحص محاكاة تنبؤي مدعوم بالذكاء الاصطناعي من دزاير أناليتيكا لمؤشرات السوق الجزائري.'
-                      : 'Predictive simulation checkup powered by DZ Analytica\'s forecasting models for the Algerian market.'}
-                  </p>
-                </div>
-
-                {/* B2B Strategic Checklist */}
-                <div className="bg-[#131f38]/60 border border-[#c9a84c]/15 rounded-2xl p-6 space-y-4">
-                  <div className="text-[10px] font-bold text-[#c9a84c] tracking-wider uppercase">
-                    {lang === 'ar' ? 'مخرجات استراتيجية B2B' : 'B2B Strategic Takeaways'}
-                  </div>
-                  <ul className="text-xs text-[#cbd5e1] space-y-3">
-                    <li className="flex gap-2 items-start">
-                      <span className="text-[#c9a84c] font-bold">✓</span>
-                      <span>{lang === 'ar' ? 'تحديد الفرص الاستباقية في السوق الجزائري.' : 'Identify early mover advantages in the Algerian space.'}</span>
-                    </li>
-                    <li className="flex gap-2 items-start">
-                      <span className="text-[#c9a84c] font-bold">✓</span>
-                      <span>{lang === 'ar' ? 'مواءمة استراتيجيات التوسع مع تحولات استهلاك الطاقة.' : 'Align expansion strategies with consumer demand shifts.'}</span>
-                    </li>
-                    <li className="flex gap-2 items-start">
-                      <span className="text-[#c9a84c] font-bold">✓</span>
-                      <span>{lang === 'ar' ? 'رقمنة العمليات التشغيلية لخفض تكاليف المعاملات.' : 'Digitize operational workflows to mitigate transaction friction.'}</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
             </div>
 
-            {/* Keywords footer tag cloud */}
-            <div className="mt-12 pt-6 border-t border-[#c9a84c]/10 flex flex-wrap gap-2">
-              {selectedArticle.keywords[lang].split(',').map((kw, idx) => (
-                <span key={idx} className="text-xs bg-[#131f38] px-3 py-1 rounded-full text-[#8b9bb4] border border-[#c9a84c]/15">
-                  #{kw.trim()}
-                </span>
-              ))}
+            {/* Content & Sidebar Grid */}
+            <div className="wcr-article-content">
+              <div className="wcr-article-grid">
+                
+                {/* Main Article Body */}
+                <div className="wcr-body-text">
+                  <div 
+                    className="prose prose-invert max-w-none text-[#cbd5e1] space-y-8 leading-relaxed text-base md:text-lg"
+                    dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                    style={{
+                      fontFamily: lang === 'ar' ? '"Cairo", sans-serif' : '"Inter", sans-serif'
+                    }}
+                  >
+                    <div dangerouslySetInnerHTML={{ __html: selectedArticle.content[lang] }} />
+                  </div>
+                </div>
+
+                {/* Sidebar */}
+                <div className="space-y-6 lg:sticky lg:top-24">
+                  {/* B2B Strategic Checklist */}
+                  <div className="bg-[#131f38] border border-[#c9a84c]/25 rounded-xl p-6 space-y-4">
+                    <div className="text-[10px] font-bold text-[#c9a84c] tracking-wider uppercase">
+                      {lang === 'ar' ? 'مخرجات استراتيجية B2B' : 'B2B Strategic Takeaways'}
+                    </div>
+                    <ul className="text-xs text-[#cbd5e1] space-y-3">
+                      <li className="flex gap-2 items-start">
+                        <span className="text-[#c9a84c] font-bold">✓</span>
+                        <span>{lang === 'ar' ? 'تحديد الفرص الاستباقية في الأسواق الإقليمية.' : 'Identify early mover advantages in regional spaces.'}</span>
+                      </li>
+                      <li className="flex gap-2 items-start">
+                        <span className="text-[#c9a84c] font-bold">✓</span>
+                        <span>{lang === 'ar' ? 'مواءمة استراتيجيات التوسع مع تحولات استهلاك الجماهير.' : 'Align expansion strategies with mass audience demand shifts.'}</span>
+                      </li>
+                      <li className="flex gap-2 items-start">
+                        <span className="text-[#c9a84c] font-bold">✓</span>
+                        <span>{lang === 'ar' ? 'استباق التغيرات التجارية والإنفاق الإعلاني خلال المسابقة.' : 'Proactively capitalize on brand advertising surges.'}</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Keywords footer tag cloud */}
+                  <div className="bg-[#131f38]/40 border border-zinc-800/80 rounded-xl p-6">
+                    <div className="text-[10px] font-bold text-[#8b9bb4] tracking-wider uppercase mb-3">
+                      {lang === 'ar' ? 'الكلمات المفتاحية' : 'Taxonomy Tags'}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedArticle.keywords[lang].split(',').map((kw, idx) => (
+                        <span key={idx} className="text-xs bg-[#0b1426] px-3 py-1 rounded-md text-[#8b9bb4] border border-[#c9a84c]/10">
+                          #{kw.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
         ) : activeView === 'world-cup' ? (
