@@ -5,6 +5,7 @@ const ARTICLES_JSON_URL = 'https://raw.githubusercontent.com/aymen1998-numb/DZ-A
 
 module.exports = async (req, res) => {
   const slug = req.query.article;
+  const view = req.query.view;
   
   // 1. Fetch template HTML (use compiled dist/index.html if available, fallback to root index.html)
   let html = '';
@@ -20,20 +21,44 @@ module.exports = async (req, res) => {
     return res.status(500).send(`Error reading index.html: ${e.message}`);
   }
 
-  if (!slug) {
+  if (!slug && view !== 'world-cup') {
     return res.send(html);
   }
 
-  // 2. Fetch the articles JSON dynamically to ensure it's always up-to-date
+  // 2. Fetch or construct the article data
   let article = null;
-  try {
-    const response = await fetch(ARTICLES_JSON_URL);
-    if (response.ok) {
-      const articles = await response.json();
-      article = articles.find(a => a.slug === slug);
+  if (view === 'world-cup') {
+    article = {
+      slug: 'world-cup',
+      title: {
+        ar: 'كأس العالم 2026: استخبارات السوق وتوقعات المنتخبات العربية',
+        en: 'FIFA World Cup 2026: Arab Teams Market Intelligence & Projections',
+        fr: 'Coupe du Monde FIFA 2026 : Rapports d\'intelligence et prévisions'
+      },
+      excerpt: {
+        ar: 'تغطية تحليلية خاصة من دزاير أناليتيكا لأداء وتوقعات ومؤشرات السوق للمنتخبات العربية المشاركة في نهائيات كأس العالم 2026.',
+        en: 'Special analytics coverage by DZ Analytica mapping market impact, tactics, and projections for Arab nations in the FIFA World Cup 2026.',
+        fr: 'Couverture de DZ Analytica pour la Coupe du Monde FIFA 2026, évaluant l\'impact économique et les prévisions.'
+      },
+      keywords: {
+        ar: 'كأس العالم 2026, المنتخبات العربية, استخبارات السوق',
+        en: 'world cup, arab teams, market intelligence',
+        fr: 'coupe du monde, equipes arabes, intelligence'
+      },
+      content: {
+        en: 'world cup'
+      }
+    };
+  } else {
+    try {
+      const response = await fetch(ARTICLES_JSON_URL);
+      if (response.ok) {
+        const articles = await response.json();
+        article = articles.find(a => a.slug === slug);
+      }
+    } catch (err) {
+      console.error('Error fetching articles json:', err);
     }
-  } catch (err) {
-    console.error('Error fetching articles json:', err);
   }
 
   if (!article) {
@@ -49,7 +74,9 @@ module.exports = async (req, res) => {
   ).toLowerCase();
 
   let category = 'Market Report';
-  if (textContent.includes('ai') || textContent.includes('mirofish') || textContent.includes('swarm') || textContent.includes('predictive')) {
+  if (view === 'world-cup') {
+    category = 'World Cup Special';
+  } else if (textContent.includes('ai') || textContent.includes('mirofish') || textContent.includes('swarm') || textContent.includes('predictive')) {
     category = 'AI & Predictive';
   } else if (textContent.includes('erp') || textContent.includes('odoo') || textContent.includes('software')) {
     category = 'ERP & Solutions';
@@ -70,13 +97,16 @@ module.exports = async (req, res) => {
   const host = req.headers.host || 'news.dzanalytica.com';
   const protocol = req.headers['x-forwarded-proto'] || 'https';
   const ogImageUrl = `${protocol}://${host}/api/og?title=${encodeURIComponent(titleEn)}&category=${encodeURIComponent(category)}`;
+  const shareUrl = view === 'world-cup'
+    ? `${protocol}://${host}/?view=world-cup`
+    : `${protocol}://${host}/?article=${slug}`;
 
   // 3. Replace Meta Tags in HTML
   const metaReplacements = {
     '<meta property="og:title" content="[^"]*"' : `<meta property="og:title" content="${titleAr} | ${titleEn}"`,
     '<meta property="og:description" content="[^"]*"' : `<meta property="og:description" content="${excerptEn || excerptAr}"`,
     '<meta property="og:image" content="[^"]*"' : `<meta property="og:image" content="${ogImageUrl}"`,
-    '<meta property="og:url" content="[^"]*"' : `<meta property="og:url" content="${protocol}://${host}/?article=${slug}"`,
+    '<meta property="og:url" content="[^"]*"' : `<meta property="og:url" content="${shareUrl}"`,
     '<meta name="twitter:title" content="[^"]*"' : `<meta name="twitter:title" content="${titleAr} | ${titleEn}"`,
     '<meta name="twitter:description" content="[^"]*"' : `<meta name="twitter:description" content="${excerptEn || excerptAr}"`,
     '<meta name="twitter:image" content="[^"]*"' : `<meta name="twitter:image" content="${ogImageUrl}"`,
