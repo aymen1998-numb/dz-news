@@ -10,8 +10,12 @@ import {
   BookOpen, 
   TrendingUp, 
   Check,
-  ChevronRight
+  ChevronRight,
+  Settings,
+  Trophy
 } from 'lucide-react';
+import WorldCupReport from './components/WorldCupReport';
+import AdminDashboard from './components/AdminDashboard';
 
 interface MultilingualString {
   ar: string;
@@ -29,6 +33,7 @@ interface Article {
 }
 
 type Language = 'ar' | 'en' | 'fr';
+type ActiveView = 'feed' | 'world-cup' | 'admin';
 
 const translations = {
   ar: {
@@ -50,7 +55,12 @@ const translations = {
       macro: 'الاقتصاد الكلي',
       b2b: 'أبحاث السوق B2B'
     },
-    metaDesc: 'تحليلات وتقارير أسبوعية مدعومة بالذكاء الاصطناعي حول السوق والاقتصاد الجزائري من دزاير أناليتيكا.'
+    metaDesc: 'تحليلات وتقارير أسبوعية مدعومة بالذكاء الاصطناعي حول السوق والاقتصاد الجزائري من دزاير أناليتيكا.',
+    navFeed: 'تغذية الأخبار',
+    navWorldCup: 'تقرير كأس العالم 2026',
+    navAdmin: 'لوحة التحكم',
+    specialReportBanner: '🔥 تغطية خاصة: تقرير استخبارات السوق للمنتخبات العربية في كأس العالم 2026. استكشف التحليلات والتوقعات.',
+    exploreReport: 'استكشف التقرير المباشر'
   },
   en: {
     siteTitle: 'DZ Insights',
@@ -71,7 +81,12 @@ const translations = {
       macro: 'Macroeconomics',
       b2b: 'B2B Market Research'
     },
-    metaDesc: 'Weekly AI-powered market intelligence reports and B2B articles on the Algerian economy from DZ Analytica.'
+    metaDesc: 'Weekly AI-powered market intelligence reports and B2B articles on the Algerian economy from DZ Analytica.',
+    navFeed: 'News Feed',
+    navWorldCup: 'World Cup 2026 Report',
+    navAdmin: 'Admin Control',
+    specialReportBanner: '🔥 Special Coverage: FIFA World Cup 2026 Arab Teams Market Intelligence Report. Explore live analytics & match projections.',
+    exploreReport: 'Explore Live Report'
   },
   fr: {
     siteTitle: 'DZ Insights',
@@ -92,7 +107,12 @@ const translations = {
       macro: 'Macroéconomie',
       b2b: 'Études de Marché B2B'
     },
-    metaDesc: 'Rapports hebdomadaires sur le marché et l\'économie algérienne propulsés par l\'IA de DZ Analytica.'
+    metaDesc: 'Rapports hebdomadaires sur le marché et l\'économie algérienne propulsés par l\'IA de DZ Analytica.',
+    navFeed: 'Flux d\'Actualités',
+    navWorldCup: 'Rapport Coupe du Monde 2026',
+    navAdmin: 'Administration',
+    specialReportBanner: '🔥 Couverture Spéciale : Rapport d\'intelligence de marché des équipes arabes à la Coupe du Monde 2026. Explorez les analyses.',
+    exploreReport: 'Explorer le Rapport'
   }
 };
 
@@ -101,26 +121,26 @@ const ARTICLES_FEED_URL = 'https://raw.githubusercontent.com/aymen1998-numb/DZ-A
 // Fallback initial mock data if the network is unavailable or fetch fails
 const fallbackArticles: Article[] = [
   {
-    slug: "algeria-ai-tech-innovation-hub",
+    slug: "fifa-world-cup-2026-algeria-market-impact",
     title: {
-      ar: "تسارع التحول الرقمي في الجزائر: قفزة نحو الريادة التكنولوجية الإقليمية",
-      en: "Algeria's Accelerated Digital Transformation: A Leap Towards Regional Tech Leadership",
-      fr: "Transformation numérique accélérée en Algérie : Un bond vers le leadership technologique"
+      ar: "كأس العالم FIFA 2026: توقعات السوق الجزائري للإعلانات التجارية (B2B) والإنفاق الاستهلاكي",
+      en: "FIFA World Cup 2026: Algerian Market Forecasts for B2B Advertising and Consumer Spending",
+      fr: "Coupe du Monde FIFA 2026 : Prévisions du marché algérien pour la publicité B2B et les dépenses de consommation"
     },
     excerpt: {
-      ar: "تحليل شامل لتوجهات التحول الرقمي في الجزائر لعام 2026، والفرص الناشئة للشركات والمؤسسات الكبرى.",
-      en: "A comprehensive analysis of digital transformation trends in Algeria in 2026, and emerging opportunities for enterprises.",
-      fr: "Une analyse complète des tendances de la transformation numérique en Algérie en 2026, et les opportunités pour les entreprises."
+      ar: "تتوقع DZ Analytica تأثيراً اقتصادياً كبيراً لكأس العالم FIFA 2026 على السوق الجزائري، حتى مع عدم مشاركة المنتخب الوطني.",
+      en: "DZ Analytica predicts a significant economic ripple effect from the FIFA World Cup 2026 on the Algerian market.",
+      fr: "DZ Analytica prévoit un effet d'entraînement économique significatif de la Coupe du Monde FIFA 2026 sur le marché algérien."
     },
     content: {
-      ar: "تشهد الساحة التكنولوجية الجزائرية تحولاً جذرياً مدفوعاً باستثمارات استراتيجية في البنية التحتية والذكاء الاصطناعي. هذا التقرير يوضح كيف تساهم حلول البيانات وأنظمة تخطيط الموارد في تمكين قادة الأعمال بالجزائر.",
-      en: "The Algerian technology ecosystem is undergoing a radical shift driven by strategic investments in infrastructure and artificial intelligence. This report outlines how data solutions and ERP platforms empower business leaders in Algeria.",
-      fr: "L'écosystème technologique algérien subit un changement radical tiré par des investissements stratégiques dans les infrastructures et l'intelligence artificielle. Ce rapport présente comment les solutions de données et les plateformes ERP renforcent les leaders."
+      ar: "<h3>مقدمة: الجاذبية الدائمة لكرة القدم العالمية في الجزائر</h3>\nعلى الرغم من غياب الجزائر عن كأس العالم FIFA 2026، فإن الجاذبية العالمية للبطولة تضمن لها بصمة اقتصادية كبيرة على السوق الجزائري.",
+      en: "<h3>Introduction: The Unwavering Appeal of Global Football in Algeria</h3>\nDespite Algeria's absence from the FIFA World Cup 2026, the tournament's universal appeal ensures a substantial economic footprint.",
+      fr: "<h3>Introduction : L'attrait indéfectible du football mondial en Algérie</h3>\nMalgré l'absence de l'Algérie de la Coupe du Monde de la FIFA 2026, l'attrait universel du tournoi garantit une empreinte économique."
     },
     keywords: {
-      ar: "ذكاء اصطناعي, الجزائر, تحول رقمي, شركات",
-      en: "AI, Algeria, Digital Transformation, B2B",
-      fr: "IA, Algérie, Transformation Numérique, B2B"
+      ar: "كأس العالم, الجزائر, استهلاك, إعلانات B2B",
+      en: "World Cup, Algeria, Consumer Spending, B2B Advertising",
+      fr: "Coupe du Monde, Algérie, Dépenses, Publicité B2B"
     },
     date: new Date().toISOString()
   }
@@ -134,6 +154,7 @@ function App() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [copied, setCopied] = useState(false);
+  const [activeView, setActiveView] = useState<ActiveView>('feed');
 
   // Set page direction according to language
   useEffect(() => {
@@ -166,6 +187,16 @@ function App() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const slug = params.get('article');
+    const view = params.get('view');
+    
+    if (view === 'world-cup') {
+      setActiveView('world-cup');
+    } else if (view === 'admin') {
+      setActiveView('admin');
+    } else {
+      setActiveView('feed');
+    }
+
     if (slug && articles.length > 0) {
       const matched = articles.find(a => a.slug === slug);
       if (matched) {
@@ -181,6 +212,17 @@ function App() {
       url.searchParams.set('article', article.slug);
     } else {
       url.searchParams.delete('article');
+    }
+    window.history.pushState({}, '', url.toString());
+  };
+
+  const changeView = (view: ActiveView) => {
+    setActiveView(view);
+    const url = new URL(window.location.href);
+    if (view === 'feed') {
+      url.searchParams.delete('view');
+    } else {
+      url.searchParams.set('view', view);
     }
     window.history.pushState({}, '', url.toString());
   };
@@ -241,7 +283,7 @@ function App() {
       {/* Navigation Header */}
       <header className="sticky top-0 z-40 bg-dz-darker/70 backdrop-blur-md border-b border-dz-gold/10">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 cursor-pointer" onClick={() => changeView('feed')}>
             <TrendingUp className="w-8 h-8 text-dz-gold animate-pulse" />
             <div>
               <span className="font-extrabold text-2xl tracking-wide bg-gradient-to-r from-dz-gold to-white bg-clip-text text-transparent">
@@ -253,14 +295,61 @@ function App() {
             </div>
           </div>
 
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-2 bg-zinc-950/80 px-2 py-1.5 rounded-xl border border-zinc-850">
+            <button
+              onClick={() => changeView('feed')}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                activeView === 'feed' ? 'bg-dz-green text-white border border-dz-green-light' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              {activeT.navFeed}
+            </button>
+            <button
+              onClick={() => changeView('world-cup')}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                activeView === 'world-cup' ? 'bg-dz-green text-white border border-dz-green-light' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Trophy className="w-3.5 h-3.5" />
+              <span>{activeT.navWorldCup}</span>
+            </button>
+            <button
+              onClick={() => changeView('admin')}
+              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                activeView === 'admin' ? 'bg-dz-green text-white border border-dz-green-light' : 'text-zinc-400 hover:text-white'
+              }`}
+            >
+              <Settings className="w-3.5 h-3.5" />
+              <span>{activeT.navAdmin}</span>
+            </button>
+          </nav>
+
           <div className="flex items-center gap-4">
+            {/* Admin trigger button for Mobile */}
+            <button
+              onClick={() => changeView(activeView === 'admin' ? 'feed' : 'admin')}
+              className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-850 rounded-xl"
+              title={activeT.navAdmin}
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+
+            <button
+              onClick={() => changeView(activeView === 'world-cup' ? 'feed' : 'world-cup')}
+              className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-850 rounded-xl"
+              title={activeT.navWorldCup}
+            >
+              <Trophy className="w-4 h-4" />
+            </button>
+
             {/* Back to main website link */}
             <a 
               href="https://www.dzanalytica.com" 
-              className="text-xs text-zinc-400 hover:text-dz-gold transition-colors flex items-center gap-1 bg-zinc-900/40 px-3 h-9 rounded-lg border border-zinc-800"
+              className="text-xs text-zinc-400 hover:text-dz-gold transition-colors flex items-center gap-1 bg-zinc-900/40 px-3 h-9 rounded-lg border border-zinc-850"
             >
               <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
-              <span>{activeT.backToHome}</span>
+              <span className="hidden sm:inline">{activeT.backToHome}</span>
             </a>
 
             {/* Language Switcher */}
@@ -283,143 +372,174 @@ function App() {
         </div>
       </header>
 
-      {/* Main Page Layout */}
-      <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
+      {/* Main Page Layout Switcher */}
+      <main className="relative z-10">
         
-        {/* Hero Banner */}
-        <section className="text-center mb-16 relative">
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
-            <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
-              {activeT.siteSubtitle}
-            </h1>
-            <p className="text-zinc-400 max-w-2xl mx-auto text-base md:text-lg">
-              {activeT.metaDesc}
-            </p>
-          </motion.div>
-        </section>
-
-        {/* Search & Categories Bar */}
-        <section className="mb-12 flex flex-col md:flex-row gap-6 items-center justify-between bg-zinc-900/30 p-6 rounded-2xl border border-dz-gold/10 backdrop-blur-md">
-          {/* Categories selectors */}
-          <div className="flex flex-wrap gap-2 w-full md:w-auto">
-            <button
-              onClick={() => setSelectedCategory('all')}
-              className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                selectedCategory === 'all'
-                  ? 'bg-dz-green text-white border border-dz-green-light'
-                  : 'bg-zinc-950/60 text-zinc-400 border border-zinc-800 hover:text-white'
-              }`}
-            >
-              {activeT.all}
-            </button>
-            {(['ai', 'erp', 'macro', 'b2b'] as const).map(cat => (
-              <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
-                  selectedCategory === cat
-                    ? 'bg-dz-green text-white border border-dz-green-light'
-                    : 'bg-zinc-950/60 text-zinc-400 border border-zinc-800 hover:text-white'
-                }`}
-              >
-                {activeT.categories[cat]}
-              </button>
-            ))}
-          </div>
-
-          {/* Search bar */}
-          <div className="relative w-full md:w-80">
-            <input
-              type="text"
-              placeholder={activeT.searchPlaceholder}
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-dz-gold transition-all text-white placeholder-zinc-500"
-            />
-            <Search className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
-          </div>
-        </section>
-
-        {/* Grid List Section */}
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="w-12 h-12 border-4 border-dz-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-zinc-400 font-medium">{activeT.loading}</p>
-          </div>
-        ) : filteredArticles.length === 0 ? (
-          <div className="text-center py-20 glass-panel rounded-2xl">
-            <BookOpen className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
-            <p className="text-zinc-400 font-medium">{activeT.noArticles}</p>
-          </div>
+        {activeView === 'world-cup' ? (
+          <WorldCupReport lang={lang} onBack={() => changeView('feed')} />
+        ) : activeView === 'admin' ? (
+          <AdminDashboard 
+            lang={lang} 
+            articles={articles} 
+            onUpdateArticles={setArticles} 
+            onPreviewArticle={(art) => selectArticle(art)} 
+          />
         ) : (
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-            layout
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredArticles.map(article => {
-                const cat = getCategory(article);
-                return (
-                  <motion.article
-                    key={article.slug}
-                    layout
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ duration: 0.3 }}
-                    className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer group"
-                    onClick={() => selectArticle(article)}
+          <div className="max-w-7xl mx-auto px-6 py-12">
+            
+            {/* World Cup Special Report Banner Alert */}
+            <div 
+              onClick={() => changeView('world-cup')}
+              className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-dz-green-dark/60 via-dz-green/35 to-zinc-950/60 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4 cursor-pointer hover:border-dz-gold/40 transition-all group shadow-xl"
+            >
+              <div className="flex items-center gap-3">
+                <Trophy className="w-6 h-6 text-dz-gold animate-bounce flex-shrink-0" />
+                <span className="text-xs md:text-sm font-semibold text-zinc-200 text-left rtl:text-right">
+                  {activeT.specialReportBanner}
+                </span>
+              </div>
+              <span className="text-xs font-bold text-dz-gold group-hover:text-white transition-colors flex items-center gap-1 flex-shrink-0">
+                <span>{activeT.exploreReport}</span>
+                <ChevronRight className="w-3.5 h-3.5 rtl:rotate-180" />
+              </span>
+            </div>
+
+            {/* Hero Banner */}
+            <section className="text-center mb-16 relative">
+              <motion.div
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+              >
+                <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight leading-tight">
+                  {activeT.siteSubtitle}
+                </h1>
+                <p className="text-zinc-400 max-w-2xl mx-auto text-base md:text-lg">
+                  {activeT.metaDesc}
+                </p>
+              </motion.div>
+            </section>
+
+            {/* Search & Categories Bar */}
+            <section className="mb-12 flex flex-col md:flex-row gap-6 items-center justify-between bg-zinc-900/30 p-6 rounded-2xl border border-dz-gold/10 backdrop-blur-md">
+              {/* Categories selectors */}
+              <div className="flex flex-wrap gap-2 w-full md:w-auto">
+                <button
+                  onClick={() => setSelectedCategory('all')}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                    selectedCategory === 'all'
+                      ? 'bg-dz-green text-white border border-dz-green-light'
+                      : 'bg-zinc-950/60 text-zinc-400 border border-zinc-800 hover:text-white'
+                  }`}
+                >
+                  {activeT.all}
+                </button>
+                {(['ai', 'erp', 'macro', 'b2b'] as const).map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
+                      selectedCategory === cat
+                        ? 'bg-dz-green text-white border border-dz-green-light'
+                        : 'bg-zinc-950/60 text-zinc-400 border border-zinc-800 hover:text-white'
+                    }`}
                   >
-                    {/* Visual Card Header (Category Gradient) */}
-                    <div className={`h-2.5 bg-gradient-to-r ${
-                      cat === 'ai' ? 'from-purple-600 to-indigo-500' :
-                      cat === 'erp' ? 'from-dz-green-light to-emerald-400' :
-                      cat === 'macro' ? 'from-amber-500 to-dz-gold' :
-                      'from-blue-600 to-cyan-500'
-                    }`} />
+                    {activeT.categories[cat]}
+                  </button>
+                ))}
+              </div>
 
-                    <div className="p-6 flex flex-col flex-grow">
-                      {/* Meta information */}
-                      <div className="flex items-center gap-3 mb-3 text-xs text-zinc-400">
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          cat === 'ai' ? 'bg-purple-950/80 text-purple-300 border border-purple-800' :
-                          cat === 'erp' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800' :
-                          cat === 'macro' ? 'bg-amber-950/80 text-amber-300 border border-amber-800' :
-                          'bg-blue-950/80 text-blue-300 border border-blue-800'
-                        }`}>
-                          {activeT.categories[cat]}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5" />
-                          <span>{new Date(article.date).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'en-US', { day: 'numeric', month: 'short' })}</span>
+              {/* Search bar */}
+              <div className="relative w-full md:w-80">
+                <input
+                  type="text"
+                  placeholder={activeT.searchPlaceholder}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl py-2.5 pl-10 pr-4 text-sm focus:outline-none focus:border-dz-gold transition-all text-white placeholder-zinc-500"
+                />
+                <Search className="absolute left-3 top-3 w-4 h-4 text-zinc-500" />
+              </div>
+            </section>
+
+            {/* Grid List Section */}
+            {loading ? (
+              <div className="text-center py-20">
+                <div className="w-12 h-12 border-4 border-dz-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                <p className="text-zinc-400 font-medium">{activeT.loading}</p>
+              </div>
+            ) : filteredArticles.length === 0 ? (
+              <div className="text-center py-20 glass-panel rounded-2xl">
+                <BookOpen className="w-16 h-16 text-zinc-600 mx-auto mb-4" />
+                <p className="text-zinc-400 font-medium">{activeT.noArticles}</p>
+              </div>
+            ) : (
+              <motion.div 
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+                layout
+              >
+                <AnimatePresence mode="popLayout">
+                  {filteredArticles.map(article => {
+                    const cat = getCategory(article);
+                    return (
+                      <motion.article
+                        key={article.slug}
+                        layout
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.95 }}
+                        transition={{ duration: 0.3 }}
+                        className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer group"
+                        onClick={() => selectArticle(article)}
+                      >
+                        {/* Visual Card Header (Category Gradient) */}
+                        <div className={`h-2.5 bg-gradient-to-r ${
+                          cat === 'ai' ? 'from-purple-600 to-indigo-500' :
+                          cat === 'erp' ? 'from-dz-green-light to-emerald-400' :
+                          cat === 'macro' ? 'from-amber-500 to-dz-gold' :
+                          'from-blue-600 to-cyan-500'
+                        }`} />
+
+                        <div className="p-6 flex flex-col flex-grow">
+                          {/* Meta information */}
+                          <div className="flex items-center gap-3 mb-3 text-xs text-zinc-400">
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                              cat === 'ai' ? 'bg-purple-950/80 text-purple-300 border border-purple-800' :
+                              cat === 'erp' ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800' :
+                              cat === 'macro' ? 'bg-amber-950/80 text-amber-300 border border-amber-800' :
+                              'bg-blue-950/80 text-blue-300 border border-blue-800'
+                            }`}>
+                              {activeT.categories[cat]}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <Calendar className="w-3.5 h-3.5" />
+                              <span>{new Date(article.date).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'en-US', { day: 'numeric', month: 'short' })}</span>
+                            </div>
+                          </div>
+
+                          {/* Title */}
+                          <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-snug group-hover:text-dz-gold transition-colors">
+                            {article.title[lang]}
+                          </h3>
+
+                          {/* Excerpt */}
+                          <p className="text-zinc-400 text-sm mb-6 line-clamp-3 leading-relaxed">
+                            {article.excerpt[lang]}
+                          </p>
+
+                          {/* Read Action button */}
+                          <div className="mt-auto pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs font-bold text-dz-gold group-hover:text-white transition-colors">
+                            <span>{activeT.readMore}</span>
+                            <ChevronRight className="w-4 h-4 rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                          </div>
                         </div>
-                      </div>
-
-                      {/* Title */}
-                      <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-snug group-hover:text-dz-gold transition-colors">
-                        {article.title[lang]}
-                      </h3>
-
-                      {/* Excerpt */}
-                      <p className="text-zinc-400 text-sm mb-6 line-clamp-3 leading-relaxed">
-                        {article.excerpt[lang]}
-                      </p>
-
-                      {/* Read Action button */}
-                      <div className="mt-auto pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs font-bold text-dz-gold group-hover:text-white transition-colors">
-                        <span>{activeT.readMore}</span>
-                        <ChevronRight className="w-4 h-4 rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
-                      </div>
-                    </div>
-                  </motion.article>
-                );
-              })}
-            </AnimatePresence>
-          </motion.div>
+                      </motion.article>
+                    );
+                  })}
+                </AnimatePresence>
+              </motion.div>
+            )}
+          </div>
         )}
       </main>
 
@@ -431,6 +551,7 @@ function App() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 md:p-6"
+            onClick={() => selectArticle(null)}
           >
             <motion.div
               initial={{ scale: 0.95, y: 30 }}
@@ -499,32 +620,16 @@ function App() {
                   {selectedArticle.excerpt[lang]}
                 </div>
 
-                {/* Article Content paragraphs */}
-                <div className="space-y-6 text-zinc-300 leading-relaxed text-base md:text-lg">
-                  {selectedArticle.content[lang].split('\n').map((para, idx) => {
-                    const trimmed = para.trim();
-                    if (!trimmed) return null;
-
-                    const isHeader = trimmed.startsWith('###') || /<h[1-6]>/.test(trimmed);
-                    if (isHeader) {
-                      const cleanText = trimmed
-                        .replace(/^###/g, '')
-                        .replace(/<\/?[a-z0-9]+[^>]*>/gi, '')
-                        .trim();
-                      return (
-                        <h4 key={idx} className="text-xl font-bold text-dz-gold pt-4 pb-2 border-b border-zinc-800">
-                          {cleanText}
-                        </h4>
-                      );
-                    }
-
-                    const cleanPara = trimmed.replace(/<\/?[a-z0-9]+[^>]*>/gi, '').trim();
-                    return cleanPara ? (
-                      <p key={idx} className="text-zinc-300">
-                        {cleanPara}
-                      </p>
-                    ) : null;
-                  })}
+                {/* Safe HTML rendering for body content */}
+                <div 
+                  className="prose prose-invert max-w-none text-zinc-350 space-y-4 leading-relaxed text-base md:text-lg whitespace-pre-line"
+                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                >
+                  <div 
+                    dangerouslySetInnerHTML={{ 
+                      __html: selectedArticle.content[lang] 
+                    }} 
+                  />
                 </div>
 
                 {/* Keywords footer tag cloud */}
