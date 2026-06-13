@@ -780,6 +780,48 @@ export default function WorldCupReport({ lang, onBack }: WorldCupReportProps) {
           <ArrowLeft className="w-3.5 h-3.5 rtl:rotate-180" />
           <span>{currentT.backButton}</span>
         </button>
+        <div className="flex items-center gap-3">
+          {/* Share on Facebook */}
+          <a
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+              `${window.location.origin}${window.location.pathname}?view=world-cup`
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-back"
+            title="Share on Facebook"
+            style={{ padding: '6px 10px' }}
+          >
+            <svg className="w-4 h-4 text-zinc-400 hover:text-blue-500 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+          </a>
+
+          {/* Share on LinkedIn */}
+          <a
+            href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+              `${window.location.origin}${window.location.pathname}?view=world-cup`
+            )}`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn-back"
+            title="Share on LinkedIn"
+            style={{ padding: '6px 10px' }}
+          >
+            <svg className="w-4 h-4 text-zinc-400 hover:text-blue-400 transition-colors" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </a>
+
+          {/* Copy link */}
+          <button
+            onClick={() => {
+              const url = `${window.location.origin}${window.location.pathname}?view=world-cup`;
+              navigator.clipboard.writeText(url).then(() => {
+                alert(lang === 'ar' ? 'تم نسخ رابط التقرير!' : 'World Cup report link copied!');
+              });
+            }}
+            className="btn-back"
+          >
+            <span>{lang === 'ar' ? 'مشاركة رابط التقرير' : 'Copy Report Link'}</span>
+          </button>
+        </div>
         <div className="wcr-footer-copy">
           {lang === 'ar' ? '12 يونيو 2026' : 'June 12, 2026'}
         </div>

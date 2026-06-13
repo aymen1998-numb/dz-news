@@ -60,7 +60,12 @@ const translations = {
     navWorldCup: 'تقرير كأس العالم 2026',
     navAdmin: 'لوحة التحكم',
     specialReportBanner: '🔥 تغطية خاصة: تقرير استخبارات السوق للمنتخبات العربية في كأس العالم 2026. استكشف التحليلات والتوقعات.',
-    exploreReport: 'استكشف التقرير المباشر'
+    exploreReport: 'استكشف التقرير المباشر',
+    adminGateTitle: "مصادقة مسؤول النظام مطلوبة",
+    adminGateDesc: "يرجى إدخال كلمة المرور للوصول إلى لوحة الإدارة وتعديل المقالات.",
+    adminGatePlaceholder: "كلمة مرور الإدارة...",
+    adminGateBtn: "دخول",
+    adminGateFail: "كلمة المرور غير صحيحة!"
   },
   en: {
     siteTitle: 'DZ Insights',
@@ -86,7 +91,12 @@ const translations = {
     navWorldCup: 'World Cup 2026 Report',
     navAdmin: 'Admin Control',
     specialReportBanner: '🔥 Special Coverage: FIFA World Cup 2026 Arab Teams Market Intelligence Report. Explore live analytics & match projections.',
-    exploreReport: 'Explore Live Report'
+    exploreReport: 'Explore Live Report',
+    adminGateTitle: "Admin Authorization Required",
+    adminGateDesc: "Please enter the administrative password to access the CMS and edit articles.",
+    adminGatePlaceholder: "Admin Password...",
+    adminGateBtn: "Authenticate",
+    adminGateFail: "Incorrect password!"
   },
   fr: {
     siteTitle: 'DZ Insights',
@@ -112,7 +122,12 @@ const translations = {
     navWorldCup: 'Rapport Coupe du Monde 2026',
     navAdmin: 'Administration',
     specialReportBanner: '🔥 Couverture Spéciale : Rapport d\'intelligence de marché des équipes arabes à la Coupe du Monde 2026. Explorez les analyses.',
-    exploreReport: 'Explorer le Rapport'
+    exploreReport: 'Explorer le Rapport',
+    adminGateTitle: "Authentification Administrateur Requise",
+    adminGateDesc: "Veuillez entrer le mot de passe d'administration pour accéder au CMS et éditer les articles.",
+    adminGatePlaceholder: "Mot de passe...",
+    adminGateBtn: "S'authentifier",
+    adminGateFail: "Mot de passe incorrect !"
   }
 };
 
@@ -155,6 +170,11 @@ function App() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [copied, setCopied] = useState(false);
   const [activeView, setActiveView] = useState<ActiveView>('feed');
+  
+  // Admin password authorization state
+  const [adminPassword, setAdminPassword] = useState('');
+  const [isAdminAuthorized, setIsAdminAuthorized] = useState(() => sessionStorage.getItem('dz_admin_auth') === 'true');
+  const [showAdminTab, setShowAdminTab] = useState(false);
 
   // Set page direction according to language
   useEffect(() => {
@@ -182,6 +202,16 @@ function App() {
     };
     fetchArticles();
   }, []);
+
+  // Show Admin link on header only if they are authorized or have ?admin=true parameter in URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('admin') === 'true' || isAdminAuthorized) {
+      setShowAdminTab(true);
+    } else {
+      setShowAdminTab(false);
+    }
+  }, [isAdminAuthorized]);
 
   // Deep-linking handle
   useEffect(() => {
@@ -234,6 +264,16 @@ function App() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
+  };
+
+  const handleAdminAuth = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminPassword === 'dzanalytica2026') {
+      setIsAdminAuthorized(true);
+      sessionStorage.setItem('dz_admin_auth', 'true');
+    } else {
+      alert(activeT.adminGateFail);
+    }
   };
 
   // Helper to determine article category based on content/keywords
@@ -314,30 +354,36 @@ function App() {
               <Trophy className="w-3.5 h-3.5" />
               <span>{activeT.navWorldCup}</span>
             </button>
-            <button
-              onClick={() => changeView('admin')}
-              className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
-                activeView === 'admin' ? 'bg-dz-green text-white border border-dz-green-light' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              <Settings className="w-3.5 h-3.5" />
-              <span>{activeT.navAdmin}</span>
-            </button>
+            
+            {/* Admin link - only visible if authorized/triggered */}
+            {showAdminTab && (
+              <button
+                onClick={() => changeView('admin')}
+                className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                  activeView === 'admin' ? 'bg-dz-green text-white border border-dz-green-light' : 'text-zinc-400 hover:text-white'
+                }`}
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span>{activeT.navAdmin}</span>
+              </button>
+            )}
           </nav>
 
           <div className="flex items-center gap-4">
-            {/* Admin trigger button for Mobile */}
-            <button
-              onClick={() => changeView(activeView === 'admin' ? 'feed' : 'admin')}
-              className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-850 rounded-xl"
-              title={activeT.navAdmin}
-            >
-              <Settings className="w-4 h-4" />
-            </button>
+            {/* Mobile Nav Actions */}
+            {showAdminTab && (
+              <button
+                onClick={() => changeView(activeView === 'admin' ? 'feed' : 'admin')}
+                className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-855 rounded-xl"
+                title={activeT.navAdmin}
+              >
+                <Settings className="w-4 h-4" />
+              </button>
+            )}
 
             <button
               onClick={() => changeView(activeView === 'world-cup' ? 'feed' : 'world-cup')}
-              className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-850 rounded-xl"
+              className="md:hidden p-2 text-zinc-400 hover:text-dz-gold bg-zinc-900 border border-zinc-855 rounded-xl"
               title={activeT.navWorldCup}
             >
               <Trophy className="w-4 h-4" />
@@ -378,12 +424,40 @@ function App() {
         {activeView === 'world-cup' ? (
           <WorldCupReport lang={lang} onBack={() => changeView('feed')} />
         ) : activeView === 'admin' ? (
-          <AdminDashboard 
-            lang={lang} 
-            articles={articles} 
-            onUpdateArticles={setArticles} 
-            onPreviewArticle={(art) => selectArticle(art)} 
-          />
+          // Password Gate for Administration Dashboard
+          !isAdminAuthorized ? (
+            <div className="max-w-md mx-auto px-6 py-24 text-center">
+              <div className="glass-panel p-8 rounded-3xl border border-dz-gold/25 space-y-6">
+                <Settings className="w-12 h-12 text-dz-gold animate-spin mx-auto" />
+                <div>
+                  <h2 className="text-xl font-bold mb-2">{activeT.adminGateTitle}</h2>
+                  <p className="text-xs text-zinc-400">{activeT.adminGateDesc}</p>
+                </div>
+                <form onSubmit={handleAdminAuth} className="space-y-4">
+                  <input
+                    type="password"
+                    placeholder={activeT.adminGatePlaceholder}
+                    value={adminPassword}
+                    onChange={(e) => setAdminPassword(e.target.value)}
+                    className="w-full bg-zinc-950/80 border border-zinc-800 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-dz-gold text-center font-bold"
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-dz-gold text-dz-darker font-bold py-2.5 rounded-xl text-xs hover:bg-dz-gold-light transition-all cursor-pointer"
+                  >
+                    {activeT.adminGateBtn}
+                  </button>
+                </form>
+              </div>
+            </div>
+          ) : (
+            <AdminDashboard 
+              lang={lang} 
+              articles={articles} 
+              onUpdateArticles={setArticles} 
+              onPreviewArticle={(art) => selectArticle(art)} 
+            />
+          )
         ) : (
           <div className="max-w-7xl mx-auto px-6 py-12">
             
@@ -422,7 +496,6 @@ function App() {
 
             {/* Search & Categories Bar */}
             <section className="mb-12 flex flex-col md:flex-row gap-6 items-center justify-between bg-zinc-900/30 p-6 rounded-2xl border border-dz-gold/10 backdrop-blur-md">
-              {/* Categories selectors */}
               <div className="flex flex-wrap gap-2 w-full md:w-auto">
                 <button
                   onClick={() => setSelectedCategory('all')}
@@ -449,7 +522,6 @@ function App() {
                 ))}
               </div>
 
-              {/* Search bar */}
               <div className="relative w-full md:w-80">
                 <input
                   type="text"
@@ -492,7 +564,6 @@ function App() {
                         className="glass-panel glass-panel-hover rounded-2xl overflow-hidden flex flex-col h-full cursor-pointer group"
                         onClick={() => selectArticle(article)}
                       >
-                        {/* Visual Card Header (Category Gradient) */}
                         <div className={`h-2.5 bg-gradient-to-r ${
                           cat === 'ai' ? 'from-purple-600 to-indigo-500' :
                           cat === 'erp' ? 'from-dz-green-light to-emerald-400' :
@@ -501,7 +572,6 @@ function App() {
                         }`} />
 
                         <div className="p-6 flex flex-col flex-grow">
-                          {/* Meta information */}
                           <div className="flex items-center gap-3 mb-3 text-xs text-zinc-400">
                             <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
                               cat === 'ai' ? 'bg-purple-950/80 text-purple-300 border border-purple-800' :
@@ -517,17 +587,14 @@ function App() {
                             </div>
                           </div>
 
-                          {/* Title */}
                           <h3 className="text-xl font-bold mb-3 line-clamp-2 leading-snug group-hover:text-dz-gold transition-colors">
                             {article.title[lang]}
                           </h3>
 
-                          {/* Excerpt */}
                           <p className="text-zinc-400 text-sm mb-6 line-clamp-3 leading-relaxed">
                             {article.excerpt[lang]}
                           </p>
 
-                          {/* Read Action button */}
                           <div className="mt-auto pt-4 border-t border-zinc-800/80 flex items-center justify-between text-xs font-bold text-dz-gold group-hover:text-white transition-colors">
                             <span>{activeT.readMore}</span>
                             <ChevronRight className="w-4 h-4 rtl:rotate-180 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
@@ -573,6 +640,32 @@ function App() {
                 </button>
 
                 <div className="flex items-center gap-3">
+                  {/* Share on Facebook */}
+                  <a
+                    href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+                      `${window.location.origin}${window.location.pathname}?article=${selectedArticle.slug}`
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-blue-500 transition-colors flex items-center"
+                    title="Share on Facebook"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                  </a>
+
+                  {/* Share on LinkedIn */}
+                  <a
+                    href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(
+                      `${window.location.origin}${window.location.pathname}?article=${selectedArticle.slug}`
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="p-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-blue-400 transition-colors flex items-center"
+                    title="Share on LinkedIn"
+                  >
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                  </a>
+
                   {/* Copy link share button */}
                   <button
                     onClick={copyLink}
@@ -650,7 +743,12 @@ function App() {
       {/* Footer */}
       <footer className="border-t border-zinc-900 bg-zinc-950/40 py-12 relative z-10">
         <div className="max-w-7xl mx-auto px-6 text-center text-zinc-500 text-xs flex flex-col md:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} DZ Analytica. All rights reserved.</p>
+          <p 
+            onClick={() => changeView('admin')}
+            className="cursor-pointer hover:text-dz-gold transition-colors"
+          >
+            © {new Date().getFullYear()} DZ Analytica. All rights reserved.
+          </p>
           <a 
             href="https://www.dzanalytica.com" 
             target="_blank" 
