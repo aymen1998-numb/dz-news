@@ -1,11 +1,22 @@
 import { ArrowLeft } from 'lucide-react';
 
-interface WorldCupReportProps {
-  lang: 'ar' | 'en' | 'fr';
-  onBack: () => void;
+interface Article {
+  slug: string;
+  title: { ar: string; en: string; fr: string };
+  excerpt: { ar: string; en: string; fr: string };
+  content: { ar: string; en: string; fr: string };
+  keywords: { ar: string; en: string; fr: string };
+  date: string;
 }
 
-export default function WorldCupReport({ lang, onBack }: WorldCupReportProps) {
+interface WorldCupReportProps {
+  lang: 'ar' | 'en' | 'fr';
+  articles?: Article[];
+  onBack: () => void;
+  onPreviewArticle?: (article: any) => void;
+}
+
+export default function WorldCupReport({ lang, articles = [], onBack, onPreviewArticle }: WorldCupReportProps) {
   const isRtl = lang === 'ar';
 
   const t = {
@@ -247,6 +258,17 @@ export default function WorldCupReport({ lang, onBack }: WorldCupReportProps) {
     { flag: "🇯🇴", name: { en: "Jordan", ar: "الأردن", fr: "Jordanie" }, group: "Group J", prob: currentT.eliminated, probLabel: "0 pts, GD -3", outlook: { en: "Developmental tournament simulation. Experience gained will prove invaluable for future qualifying campaigns.", ar: "محاكاة لبطولة تطويرية وتجربة قيمة ستكون حاسمة في تصفيات كأس العالم القادمة.", fr: "Simulation d'apprentissage. L'expérience acquise s'avérera précieuse pour les futures campagnes." }, color: "low" }
   ];
 
+  const worldCupArticles = articles.filter(art => {
+    const text = (
+      (art.keywords?.en || '') + ' ' +
+      (art.keywords?.ar || '') + ' ' +
+      (art.title?.en || '') + ' ' +
+      (art.title?.ar || '') + ' ' +
+      (art.slug || '')
+    ).toLowerCase();
+    return text.includes('world cup') || text.includes('كأس العالم') || text.includes('qualification') || text.includes('triumph') || text.includes('world-cup');
+  });
+
   return (
     <div className="world-cup-report-page">
       {/* Dynamic Font and Style Injection */}
@@ -272,6 +294,15 @@ export default function WorldCupReport({ lang, onBack }: WorldCupReportProps) {
           text-align: ${isRtl ? 'right' : 'left'};
           direction: ${isRtl ? 'rtl' : 'ltr'};
           padding-bottom: 40px;
+        }
+
+        .hover-card-highlight {
+          transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        }
+        .hover-card-highlight:hover {
+          transform: translateY(-4px);
+          border-color: var(--gold) !important;
+          box-shadow: 0 12px 24px -10px rgba(201, 168, 76, 0.15);
         }
 
         .report-back-bar {
@@ -1191,6 +1222,90 @@ export default function WorldCupReport({ lang, onBack }: WorldCupReportProps) {
           </div>
         </div>
       </section>
+
+      {/* World Cup Match Coverage Feed */}
+      {worldCupArticles.length > 0 && (
+        <section className="wcr-wrapper" style={{ padding: '64px 48px', borderTop: '1px solid rgba(201,168,76,.15)' }}>
+          <div className="wcr-section-eyebrow">
+            {lang === 'ar' ? 'تغطية تحليلية خاصة' : lang === 'fr' ? 'Couverture Spéciale' : 'Special Analytics Coverage'}
+          </div>
+          <h2 className="wcr-section-title">
+            {lang === 'ar' ? 'توقعات المباريات والتقارير المباشرة' : lang === 'fr' ? 'Projections de Match & Rapports Directs' : 'Match Projections & Direct Reports'}
+          </h2>
+          
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: '24px',
+            marginTop: '32px'
+          }}>
+            {worldCupArticles.map(art => (
+              <div
+                key={art.slug}
+                onClick={() => onPreviewArticle?.(art)}
+                style={{
+                  background: 'var(--navy2)',
+                  border: '1px solid rgba(201,168,76,.15)',
+                  borderRadius: '6px',
+                  padding: '24px',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  height: '100%'
+                }}
+                className="hover-card-highlight"
+              >
+                <div style={{
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  textTransform: 'uppercase',
+                  color: 'var(--gold)',
+                  letterSpacing: '0.1em',
+                  marginBottom: '12px'
+                }}>
+                  {lang === 'ar' ? 'تقرير محاكاة' : 'SIMULATION REPORT'}
+                </div>
+                
+                <h3 style={{
+                  fontFamily: 'Barlow Condensed, sans-serif',
+                  fontSize: '22px',
+                  fontWeight: 800,
+                  color: 'var(--white)',
+                  margin: '0 0 12px 0',
+                  lineHeight: '1.2'
+                }}>
+                  {art.title[lang]}
+                </h3>
+                
+                <p style={{
+                  fontSize: '13px',
+                  color: 'var(--slate)',
+                  margin: '0 0 24px 0',
+                  lineHeight: '1.6',
+                  flexGrow: 1
+                }}>
+                  {art.excerpt[lang]}
+                </p>
+                
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: 'var(--gold)',
+                  borderTop: '1px solid rgba(139,155,180,.15)',
+                  paddingTop: '12px',
+                  marginTop: 'auto'
+                }}>
+                  <span>{lang === 'ar' ? 'اقرأ التقرير الكامل' : lang === 'fr' ? 'Lire le rapport' : 'Read Full Report'}</span>
+                  <span>→</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="wcr-footer">

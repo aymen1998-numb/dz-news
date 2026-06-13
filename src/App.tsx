@@ -422,7 +422,12 @@ function App() {
       <main className="relative z-10">
         
         {activeView === 'world-cup' ? (
-          <WorldCupReport lang={lang} onBack={() => changeView('feed')} />
+          <WorldCupReport 
+            lang={lang} 
+            articles={articles}
+            onBack={() => changeView('feed')} 
+            onPreviewArticle={(art) => selectArticle(art)}
+          />
         ) : activeView === 'admin' ? (
           // Password Gate for Administration Dashboard
           !isAdminAuthorized ? (
