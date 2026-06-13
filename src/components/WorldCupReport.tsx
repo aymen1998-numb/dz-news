@@ -801,6 +801,9 @@ export default function WorldCupReport({ lang, articles = [], onBack, onPreviewA
           .wcr-gauge-card { max-width: 100%; }
         }
         @media (max-width: 600px) {
+          .report-back-bar, .wcr-hero, .wcr-wrapper, .wcr-overview-section, .wcr-conclusion-banner, .wcr-footer {
+            padding-left: 16px !important; padding-right: 16px !important;
+          }
           .wcr-overview-grid { grid-template-columns: 1fr; }
         }
       `}</style>

@@ -638,7 +638,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl p-4 md:p-6"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-xl p-2 sm:p-4 md:p-6"
             onClick={() => selectArticle(null)}
           >
             <motion.div
@@ -646,18 +646,18 @@ function App() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="bg-[#0b1426] border border-[#c9a84c]/20 rounded-3xl w-full max-w-5xl max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
+              className="bg-[#0b1426] border border-[#c9a84c]/20 rounded-2xl sm:rounded-3xl w-full max-w-5xl max-h-[95vh] sm:max-h-[90vh] flex flex-col shadow-2xl relative overflow-hidden"
               onClick={(e) => e.stopPropagation()}
             >
               
               {/* Close Button / Controls Header */}
-              <div className="flex items-center justify-between px-6 py-5 border-b border-[#c9a84c]/15 bg-[#0b1426]/90 backdrop-blur-md relative z-10">
+              <div className="flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 border-b border-[#c9a84c]/15 bg-[#0b1426]/90 backdrop-blur-md relative z-10">
                 <button
                   onClick={() => selectArticle(null)}
                   className="flex items-center gap-2 text-sm text-[#cbd5e1] hover:text-white transition-colors"
                 >
                   <ArrowLeft className="w-4 h-4 rtl:rotate-180" />
-                  <span>{activeT.backToHome}</span>
+                  <span className="hidden sm:inline">{activeT.backToHome}</span>
                 </button>
 
                 <div className="flex items-center gap-3">
@@ -707,7 +707,7 @@ function App() {
               </div>
 
               {/* Scrollable Reader Content */}
-              <div className="p-6 md:p-8 overflow-y-auto flex-grow scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent relative">
+              <div className="p-4 sm:p-6 md:p-8 overflow-y-auto flex-grow scrollbar-thin scrollbar-thumb-zinc-800 scrollbar-track-transparent relative">
                 
                 {/* Immersive glow background */}
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
@@ -729,12 +729,12 @@ function App() {
                 </div>
 
                 {/* Main Article Title */}
-                <h2 className="text-3xl md:text-4xl font-extrabold mb-6 leading-snug text-white tracking-tight border-b border-[#c9a84c]/10 pb-4">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-6 leading-snug text-white tracking-tight border-b border-[#c9a84c]/10 pb-4">
                   {selectedArticle.title[lang]}
                 </h2>
 
                 {/* 2-Column Content Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 items-start">
                   
                   {/* Left Column: Excerpt & Main Content (70% on lg) */}
                   <div className="lg:col-span-2 space-y-6">
