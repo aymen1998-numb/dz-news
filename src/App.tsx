@@ -667,8 +667,59 @@ function App() {
                     </div>
                   </div>
                 </div>
-
               </div>
+
+              {/* Related Coverage Section */}
+              <hr className="divider" style={{ borderTop: '1px solid rgba(201, 168, 76, 0.15)', margin: '64px 0 48px' }} />
+              
+              <div className="wcr-article-related">
+                <div className="section-eyebrow">
+                  {lang === 'ar' ? 'تغطية إضافية' : lang === 'fr' ? 'Analyses Connexes' : 'Market Intelligence'}
+                </div>
+                <h2 className="section-title" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '32px' }}>
+                  {lang === 'ar' ? 'تقارير وتوقعات ذات صلة' : lang === 'fr' ? 'Analyses & Couvertures Connexes' : 'Related Projections & Market Coverage'}
+                </h2>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
+                  {articles
+                    .filter(art => art.slug !== selectedArticle.slug)
+                    .slice(0, 3)
+                    .map(art => {
+                      const cat = getCategory(art);
+                      return (
+                        <div
+                          key={art.slug}
+                          className="bg-[#131f38] border border-[#c9a84c]/15 hover:border-[#c9a84c] rounded-xl p-6 flex flex-col justify-between cursor-pointer transition-all hover:-translate-y-1 group"
+                          onClick={() => {
+                            selectArticle(art);
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                        >
+                          <div>
+                            <div className="flex items-center gap-2 mb-3 text-[10px] font-bold text-zinc-400">
+                              <span className="bg-[#006233]/45 text-[#c9a84c] px-2 py-0.5 rounded uppercase tracking-wider border border-[#c9a84c]/20">
+                                {activeT.categories[cat]}
+                              </span>
+                              <span>·</span>
+                              <span>{new Date(art.date).toLocaleDateString(lang === 'ar' ? 'ar-DZ' : 'en-US', { day: 'numeric', month: 'short' })}</span>
+                            </div>
+                            <h3 className="text-lg font-bold text-white mb-2 leading-snug group-hover:text-[#c9a84c] transition-colors line-clamp-2">
+                              {art.title[lang]}
+                            </h3>
+                            <p className="text-zinc-400 text-xs line-clamp-3 leading-relaxed mb-4">
+                              {art.excerpt[lang]}
+                            </p>
+                          </div>
+                          <div className="text-xs font-bold text-[#c9a84c] group-hover:text-white transition-colors flex items-center gap-1 mt-auto">
+                            <span>{activeT.readMore}</span>
+                            <ArrowLeft className="w-3.5 h-3.5 rotate-180 rtl:rotate-0 transition-transform group-hover:translate-x-1 rtl:group-hover:-translate-x-1" />
+                          </div>
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+
             </div>
           </div>
         ) : activeView === 'world-cup' ? (
