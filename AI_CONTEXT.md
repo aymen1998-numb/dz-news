@@ -36,7 +36,7 @@ The application is split into two interconnected layers:
 * **Barlow Condensed + Inter Font Hierarchy**:
   - Headings and statistics use the impact-heavy `Barlow Condensed` Google font.
   - Body text and tables render in clean, legible `Inter` (sans-serif) or `Cairo` (for Arabic text).
-* **Strict Server-Side Auth**: To prevent client-side reverse-engineering of the administrator credentials, password checking (`dzanalytica2026`) is handled server-side at `/api/auth` instead of hardcoding validation strings in the React bundle.
+* **Strict Server-Side Auth**: To prevent client-side reverse-engineering of the administrator credentials, password checking is handled server-side at `/api/auth` instead of hardcoding validation strings in the React bundle.
 
 ---
 
